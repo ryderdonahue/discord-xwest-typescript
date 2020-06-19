@@ -261,7 +261,7 @@ async function main() {
                 }
             }
 
-            const content = message.content.slice(1, message.content.length);
+            const content = SanitizeMarkdown(message.content).slice(1, message.content.length);
             const params = content.split(' ');
             if (params.length > 0) {
                 const command = params[0];
@@ -300,7 +300,6 @@ async function main() {
                             const minutes = Number(params[1]);
                             let reply = `Choose between the options below:\n`;
                             let emojiArray = EmojiArray.slice(0, EmojiArray.length);
-                            const pollId = message.id;
                             const options = [];
                             emojiArray = shuffle(emojiArray);
                             for (let i = 2; i < params.length; i++) {
@@ -335,7 +334,7 @@ async function main() {
                             }, minutes * 60000);
 
                         } else {
-                            message.channel.send("Not enough arguments");
+                            message.channel.send("Invalid poll arguments, sample poll: `!poll 5 Overwatch PUBG Apex`");
                         }
                         break;
 
@@ -347,7 +346,6 @@ async function main() {
     }
     );
 }
-
 
 
 main();

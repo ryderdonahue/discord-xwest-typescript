@@ -8,3 +8,8 @@ export function shuffle(a: Array<any>): Array<any> {
     }
     return a;
 }
+
+
+export function SanitizeMarkdown(str: string): string {
+    return str.replace('`', ' ').replace('\\', ' ');
+}

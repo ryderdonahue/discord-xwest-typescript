@@ -300,6 +300,9 @@ async function main() {
 
                     case ServerCommands.poll:
                         if (params.length > 3 && !isNaN(Number(params[1]))) {
+                            if (params.length > 10) {
+                                message.channel.send("Too many poll items, please limit to 8");
+                            }
                             if (numCurrentPolls < 5) {
                                 numCurrentPolls++;
                                 const minutes = Math.max(Math.min(Number(params[1]), 180), .5);

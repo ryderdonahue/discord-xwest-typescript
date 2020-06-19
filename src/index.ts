@@ -4,7 +4,7 @@ import { apiKey } from "./botkey";
 import { ServerCommands } from "./commands";
 import * as storage from "node-persist";
 import { Constants, EmojiArray } from './constants';
-import { shuffle } from './util';
+import { shuffle, SanitizeMarkdown } from './util';
 
 const botID = 447522036492009475;
 const roleChannelId = '481676280903761948';
@@ -40,6 +40,7 @@ function checkIfDuplicate(array, id): boolean {
 }
 
 
+let numCurrentPolls = 0;
 let repostStorage = null;
 let creditSystem = null;
 let warningSystem = null;
@@ -261,7 +262,9 @@ async function main() {
                 }
             }
 
+            console.log('unsanitized ' + message.content);
             const content = SanitizeMarkdown(message.content).slice(1, message.content.length);
+            console.log('sanitized ' + content);
             const params = content.split(' ');
             if (params.length > 0) {
                 const command = params[0];
@@ -297,42 +300,46 @@ async function main() {
 
                     case ServerCommands.poll:
                         if (params.length > 3 && !isNaN(Number(params[1]))) {
-                            const minutes = Number(params[1]);
-                            let reply = `Choose between the options below:\n`;
-                            let emojiArray = EmojiArray.slice(0, EmojiArray.length);
-                            const options = [];
-                            emojiArray = shuffle(emojiArray);
-                            for (let i = 2; i < params.length; i++) {
-                                reply += emojiArray[i - 2].emojiValue + ": " + params[i] + "\n";
-                                options.push({ emoji: emojiArray[i - 2], val: params[i], votes: -1, participants: [] });
+                            if (numCurrentPolls < 5) {
+                                numCurrentPolls++;
+                                const minutes = Math.max(Math.min(Number(params[1]), 180), .5);
+                                let reply = `Choose between the options below:\n`;
+                                let emojiArray = EmojiArray.slice(0, EmojiArray.length);
+                                const options = [];
+                                emojiArray = shuffle(emojiArray);
+                                for (let i = 2; i < params.length; i++) {
+                                    reply += emojiArray[i - 2].emojiValue + ": " + params[i] + "\n";
+                                    options.push({ emoji: emojiArray[i - 2], val: params[i], votes: -1, participants: [] });
+                                }
+
+                                const pollMessage = (await message.channel.send(`\`\`\`POLL STARTED - OPEN FOR ${minutes} MINUTES:\n${reply}\`\`\``));
+                                for (let i = 0; i < options.length; i++) {
+                                    pollMessage.react(options[i].emoji.discordValue);
+                                }
+
+                                setTimeout(async () => {
+                                    pollMessage.reactions.cache.forEach((reaction) => {
+                                        const opt = options.find(option => option.emoji.discordValue == reaction.emoji.identifier);
+                                        if (opt) {
+                                            opt.votes += reaction.count;
+                                            opt.participants = reaction.users.cache.map(user => user.username);
+                                        };
+                                    });
+                                    numCurrentPolls--;
+                                    const sortedOptions = options.sort((a, b) => b.votes - a.votes);
+
+                                    let results = "```Winner of the poll is:\n";
+                                    sortedOptions.forEach((opt, indx) => {
+                                        results += `#${indx + 1} ${opt.val}: ${opt.votes} votes  ${opt.participants.slice(1, opt.participants.length).join(', ')}\n`;
+                                    })
+                                    results += "```";
+
+                                    message.channel.send(results);
+
+                                }, minutes * 60000);
+                            } else {
+                                message.channel.send("Too many concurrent polls, please wait for one to finish.");
                             }
-
-                            const pollMessage = (await message.channel.send(`\`\`\`POLL STARTED - OPEN FOR ${minutes} MINUTES:\n${reply}\`\`\``));
-                            for (let i = 0; i < options.length; i++) {
-                                pollMessage.react(options[i].emoji.discordValue);
-                            }
-
-                            setTimeout(async () => {
-                                pollMessage.reactions.cache.forEach((reaction) => {
-                                    const opt = options.find(option => option.emoji.discordValue == reaction.emoji.identifier);
-                                    if (opt) {
-                                        opt.votes += reaction.count;
-                                        opt.participants = reaction.users.cache.map(user => user.username);
-                                    };
-                                });
-
-                                const sortedOptions = options.sort((a, b) => b.votes - a.votes);
-
-                                let results = "```Winner of the poll is:\n";
-                                sortedOptions.forEach((opt, indx) => {
-                                    results += `#${indx + 1} ${opt.val}: ${opt.votes} votes  ${opt.participants.slice(1, opt.participants.length).join(', ')}\n`;
-                                })
-                                results += "```";
-
-                                message.channel.send(results);
-
-                            }, minutes * 60000);
-
                         } else {
                             message.channel.send("Invalid poll arguments, sample poll: `!poll 5 Overwatch PUBG Apex`");
                         }

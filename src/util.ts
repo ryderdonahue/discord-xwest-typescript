@@ -9,7 +9,10 @@ export function shuffle(a: Array<any>): Array<any> {
     return a;
 }
 
+function replaceAll(string, search, replace) {
+    return string.split(search).join(replace);
+}
 
 export function SanitizeMarkdown(str: string): string {
-    return str.replace('`', ' ').replace('\\', ' ');
+    return replaceAll(replaceAll(replaceAll(str, '`', ''), '\\', ''), `\n`, '');
 }

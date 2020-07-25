@@ -21,5 +21,8 @@
   "include": [
     "src/**/*",
     "__tests__/**/*"
-  ]
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": 0
+  }
 }

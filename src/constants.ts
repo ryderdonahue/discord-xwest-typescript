@@ -3,6 +3,7 @@ export const Constants = {
     \n\`!roll d[number]\` will roll a dice - example: \`!roll d6\` will roll a six sided dice.
     \n\`!poll [minutes] [options]\` will start a poll - example: \`!poll 5 Apex CoD PUBG\` will start a poll between these three games that will close in 5 minutes.
     \n\`!request [feature]\` will log a feature request for XWestbot
+    \n\`!credits\` will show you your current credits
      `
 }
 

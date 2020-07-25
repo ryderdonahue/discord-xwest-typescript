@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Config } from './config';
+
 export function shuffle(a: Array<any>): Array<any> {
     let j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -15,4 +18,27 @@ function replaceAll(string, search, replace) {
 
 export function SanitizeMarkdown(str: string): string {
     return replaceAll(replaceAll(replaceAll(str, '`', ''), '\\', ''), `\n`, '');
+}
+
+
+export function checkIfMod(id: string): boolean {
+    let isMod = false;
+    Config.moderatorIds.map(val => {
+        if (val === id) {
+            isMod = true;
+        }
+    })
+
+    return isMod;
+}
+
+export function checkIfDuplicate(array: any[], id: string): boolean {
+    let found = false;
+    array.map(val => {
+        if (val == id) {
+            found = true;
+        }
+    });
+
+    return found;
 }

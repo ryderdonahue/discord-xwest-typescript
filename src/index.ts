@@ -3,10 +3,10 @@ import * as Discord from "discord.js";
 import { apiKey } from "./botkey";
 import * as storage from "node-persist";
 import { Config } from './config';
-import * as RoleManagement from './role-management';
-import * as ModeratorTools from './moderator-tools';
-import * as CreditManagement from './credit-management';
-import * as BotBehavior from './bot-behavior';
+import * as RoleManagement from './features/role-management';
+import * as ModeratorTools from './features/moderator-tools';
+import * as CreditManagement from './features/credit-management';
+import * as BotBehavior from './features/bot-behavior';
 
 export const client = new Discord.Client();
 

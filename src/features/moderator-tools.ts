@@ -1,9 +1,9 @@
 import * as Discord from "discord.js";
-import { warningSystem } from "./";
-import { checkIfMod, checkIfDuplicate } from './util';
-import { Config } from './config';
-import { CommandPrefix, ServerCommands } from './commands';
-import { GenerateServerStats } from './stats';
+import { warningSystem } from "..";
+import { checkIfMod, checkIfDuplicate } from '../util';
+import { Config } from '../config';
+import { CommandPrefix, ServerCommands } from '../commands';
+import { GenerateServerStats } from '../stats';
 
 
 export function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): void {

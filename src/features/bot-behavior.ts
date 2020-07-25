@@ -1,9 +1,9 @@
 import * as Discord from "discord.js";
-import { creditSystem, client } from "./";
-import { Config } from './config';
-import { CommandPrefix, ServerCommands } from './commands';
-import { SanitizeMarkdown, shuffle } from './util';
-import { EmojiArray, Constants } from './constants';
+import { creditSystem, client } from "..";
+import { Config } from '../config';
+import { CommandPrefix, ServerCommands } from '../commands';
+import { SanitizeMarkdown, shuffle } from '../util';
+import { EmojiArray, Constants } from '../constants';
 
 let numCurrentPolls = 0;
 

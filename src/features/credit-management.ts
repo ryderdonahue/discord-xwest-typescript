@@ -1,8 +1,8 @@
 import * as Discord from "discord.js";
-import { creditSystem } from "./";
+import { creditSystem } from "..";
 import * as storage from "node-persist";
-import { CommandPrefix, ServerCommands } from './commands';
-import { SanitizeMarkdown } from './util';
+import { CommandPrefix, ServerCommands } from '../commands';
+import { SanitizeMarkdown } from '../util';
 
 export async function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): Promise<void> {
     const messageAuthorId = messageReaction.message.author.id;

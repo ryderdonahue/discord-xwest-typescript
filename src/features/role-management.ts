@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
-import { client } from "./";
-import { Config } from './config';
+import { client } from "..";
+import { Config } from '../config';
 
 export function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): void {
     const messageAuthorId = messageReaction.message.author.id;

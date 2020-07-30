@@ -7,7 +7,7 @@ import { EmojiArray, Constants } from '../constants';
 import * as date from 'date-and-time';
 import { Reminder } from '../types';
 
-export let reminders: Reminder[] = [];
+let reminders: Reminder[] = [];
 
 let numCurrentPolls = 0;
 
@@ -43,7 +43,7 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                                 reminderMessage += params[i] + ' ';
                             }
 
-                            const reminder = await message.channel.send(`Reminder set for ${date.format(d, "hh:mm A")} to ${reminderMessage}. \n\`✅ to subscribe and 🛑 to stop and ⚡ to trigger immediately\``);
+                            const reminder = await message.channel.send(`Reminder set for ${date.format(d, "hh:mm A")} to ${reminderMessage}by <@${message.author.id}>\n\`✅ to subscribe and 🛑 to stop and ⚡ to trigger immediately\``);
 
                             reminder.react('%E2%9C%85');
                             reminder.react('%F0%9F%9B%91');
@@ -150,7 +150,7 @@ export async function CheckReminders() {
             reminder.message.channel.send(`Reminder: ${reminder.reminder}`);
             let announce = '';
             reminder.message.reactions.cache.forEach((reaction) => {
-                announce += reaction.users.cache.map((user) => `<@${user.id}>`).join(' ');
+                announce += reaction.users.cache.map((user) => user.id !== Config.botID ? `<@${user.id}>` : '').join(' ');
             });
 
             reminder.message.channel.send(announce);
@@ -166,7 +166,7 @@ export async function handleReactionAdd(messageReaction: Discord.MessageReaction
         case '%F0%9F%9B%91': // stop sign
             for (let i = reminders.length - 1; i >= 0; i--) {
                 const reminder = reminders[i];
-                if (reminder.message.id == messageReaction.message.id && user.id == reminder.authorId) {
+                if (reminder.message.id == messageReaction.message.id && (user.id === reminder.authorId || user.id === Config.superUser)) {
                     messageReaction.message.channel.send(`Reminder ${reminder.reminder} has stopped`);
                     reminders = reminders.splice(i, 1);
                     reminder.message.delete();
@@ -176,17 +176,17 @@ export async function handleReactionAdd(messageReaction: Discord.MessageReaction
         case '%E2%9A%A1': // zap 
             for (let i = reminders.length - 1; i >= 0; i--) {
                 const reminder = reminders[i];
-                if (reminder.message.id == messageReaction.message.id && user.id == reminder.authorId) {
+                if (reminder.message.id == messageReaction.message.id && (user.id === reminder.authorId || user.id === Config.superUser)) {
                     reminder.message = await reminder.message.fetch();
                     reminder.message.channel.send(`Reminder: ${reminder.reminder}`);
                     let announce = '';
                     reminder.message.reactions.cache.forEach((reaction) => {
-                        announce += reaction.users.cache.map((user) => `<@${user.id}>`).join(' ');
+                        announce += reaction.users.cache.map((user) => user.id !== Config.botID ? `<@${user.id}>` : '').join(' ');
                     });
 
                     reminder.message.channel.send(announce);
 
-                    reminders = reminders.splice(i, 1);
+                    reminders.splice(i, 1);
                 }
             }
             break;

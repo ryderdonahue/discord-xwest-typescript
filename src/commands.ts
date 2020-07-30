@@ -5,6 +5,7 @@ export const ServerCommands = {
     request: "request",
     poll: "poll",
     credits: 'credits',
+    reminder: 'reminder',
     // superuser only
     wipe: "wipe",
     consolidate: "consolidate",

@@ -4,7 +4,9 @@ export const Constants = {
     \n\`!poll [minutes] [options]\` will start a poll - example: \`!poll 5 Apex CoD PUBG\` will start a poll between these three games that will close in 5 minutes.
     \n\`!request [feature]\` will log a feature request for XWestbot
     \n\`!credits\` will show you your current credits
-     `
+    \n\`!reminder [hh:mmA] [your reminder]\` will create a one off reminder that users can subscribe to - example \`!reminder 09:30PM Time to play Siege!\`
+     `,
+    maxReminders: 30,
 }
 
 export const EmojiArray = [

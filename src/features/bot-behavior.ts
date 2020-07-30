@@ -4,6 +4,10 @@ import { Config } from '../config';
 import { CommandPrefix, ServerCommands } from '../commands';
 import { SanitizeMarkdown, shuffle } from '../util';
 import { EmojiArray, Constants } from '../constants';
+import * as date from 'date-and-time';
+import { Reminder } from '../types';
+
+export let reminders: Reminder[] = [];
 
 let numCurrentPolls = 0;
 
@@ -30,6 +34,33 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
         if (params.length > 0) {
             const command = params[0];
             switch (command) {
+                case ServerCommands.reminder:
+                    if (reminders.length < Constants.maxReminders) {
+                        if (params.length > 2) {
+                            let d = date.parse(params[1], 'hh:mmA');
+                            let reminderMessage = '';
+                            for (let i = 2; i < params.length; i++) {
+                                reminderMessage += params[i] + ' ';
+                            }
+
+                            const reminder = await message.channel.send(`Reminder set for ${date.format(d, "hh:mm A")} to ${reminderMessage}. \n\`✅ to subscribe and 🛑 to stop and ⚡ to trigger immediately\``);
+
+                            reminder.react('%E2%9C%85');
+                            reminder.react('%F0%9F%9B%91');
+                            reminder.react('%E2%9A%A1');
+                            reminders.push({
+                                message: reminder,
+                                hour: d.getHours(),
+                                minute: d.getMinutes(),
+                                meridian: date.format(d, 'A'),
+                                reminder: reminderMessage,
+                                authorId: message.author.id,
+                            });
+                        }
+                    } else {
+                        message.author.send("Too many reminders currently set.")
+                    }
+                    break;
                 case ServerCommands.help:
                     message.author.send(Constants.helpMessage);
                     message.channel.send("Command instructions have been DMd to you.");
@@ -106,3 +137,58 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
         }
     }
 }
+
+export async function CheckReminders() {
+    const now = new Date();
+    for (let i = reminders.length - 1; i >= 0; i--) {
+        const reminder = reminders[i];
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const meridian = date.format(now, 'A');
+        if (hour == reminder.hour && minute == reminder.minute && reminder.meridian == meridian) {
+            reminder.message = await reminder.message.fetch();
+            reminder.message.channel.send(`Reminder: ${reminder.reminder}`);
+            let announce = '';
+            reminder.message.reactions.cache.forEach((reaction) => {
+                announce += reaction.users.cache.map((user) => `<@${user.id}>`).join(' ');
+            });
+
+            reminder.message.channel.send(announce);
+
+            reminders = reminders.splice(i, 1);
+        }
+    };
+}
+
+
+export async function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): Promise<void> {
+    switch (messageReaction.emoji.identifier) {
+        case '%F0%9F%9B%91': // stop sign
+            for (let i = reminders.length - 1; i >= 0; i--) {
+                const reminder = reminders[i];
+                if (reminder.message.id == messageReaction.message.id && user.id == reminder.authorId) {
+                    messageReaction.message.channel.send(`Reminder ${reminder.reminder} has stopped`);
+                    reminders = reminders.splice(i, 1);
+                    reminder.message.delete();
+                }
+            }
+            break;
+        case '%E2%9A%A1': // zap 
+            for (let i = reminders.length - 1; i >= 0; i--) {
+                const reminder = reminders[i];
+                if (reminder.message.id == messageReaction.message.id && user.id == reminder.authorId) {
+                    reminder.message = await reminder.message.fetch();
+                    reminder.message.channel.send(`Reminder: ${reminder.reminder}`);
+                    let announce = '';
+                    reminder.message.reactions.cache.forEach((reaction) => {
+                        announce += reaction.users.cache.map((user) => `<@${user.id}>`).join(' ');
+                    });
+
+                    reminder.message.channel.send(announce);
+
+                    reminders = reminders.splice(i, 1);
+                }
+            }
+            break;
+    }
+};

@@ -1,4 +1,5 @@
 import * as Discord from "discord.js";
+import * as date from 'date-and-time';
 
 import { apiKey } from "./botkey";
 import * as storage from "node-persist";
@@ -41,6 +42,12 @@ async function main() {
         const RoleChannel = await XWestServer.channels.cache.find(channel => channel.id === Config.roleChannelId);
         const hydratedRoleChannel = await RoleChannel.fetch() as Discord.TextChannel;
         await hydratedRoleChannel.messages.fetch();
+
+        // setup reminders check
+        setTimeout(function () {
+            setInterval(BotBehavior.CheckReminders, 60000);
+            BotBehavior.CheckReminders();
+        }, (60 - new Date().getSeconds()) * 1000);
     });
 
     // WELCOME MESSAGE FOR NEW MEMBERS
@@ -68,6 +75,7 @@ async function main() {
 
     // BOT BEHAVIOR
     client.on('message', BotBehavior.handleMessage);
+    client.on('messageReactionAdd', BotBehavior.handleReactionAdd);
 }
 
 main();

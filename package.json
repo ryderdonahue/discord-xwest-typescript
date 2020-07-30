@@ -31,7 +31,9 @@
   },
   "author": "Ryder Donahue",
   "dependencies": {
+    "@types/date-and-time": "^0.13.0",
     "@types/node-persist": "^3.0.0",
+    "date-and-time": "^0.13.1",
     "discord.js": "^12.2.0",
     "http": "0.0.1-security",
     "node-persist": "^3.1.0",

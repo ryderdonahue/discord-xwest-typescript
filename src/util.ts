@@ -22,23 +22,9 @@ export function SanitizeMarkdown(str: string): string {
 
 
 export function checkIfMod(id: string): boolean {
-    let isMod = false;
-    Config.moderatorIds.map(val => {
-        if (val === id) {
-            isMod = true;
-        }
-    })
-
-    return isMod;
+  return Config.moderatorIds.some((moderatorId) => moderatorId === id);
 }
 
 export function checkIfDuplicate(array: any[], id: string): boolean {
-    let found = false;
-    array.map(val => {
-        if (val == id) {
-            found = true;
-        }
-    });
-
-    return found;
+  return array.some((arrayElement) => arrayElement == id);
 }

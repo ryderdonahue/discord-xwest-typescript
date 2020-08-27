@@ -5,12 +5,14 @@ import { Config } from '../config';
 import { CommandPrefix, ServerCommands } from '../commands';
 import { GenerateServerStats } from '../stats';
 
-
-export function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): void {
+let regionMessageId = '0';
+export async function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): Promise<void> {
     const messageAuthorId = messageReaction.message.author.id;
     const messageId = messageReaction.message.id;
+    const message = messageReaction.message;
+    const emojiIdentifier = messageReaction.emoji.identifier;
 
-    switch (messageReaction.emoji.identifier) {
+    switch (emojiIdentifier) {
         case '%E2%9A%A0%EF%B8%8F': //⚠""
             if (checkIfMod(user.id)) {
                 if (!warningSystem[messageAuthorId]) {
@@ -25,6 +27,27 @@ export function handleReactionAdd(messageReaction: Discord.MessageReaction, user
                 warningSystem[messageAuthorId].warnings++;
             }
             break;
+    }
+
+    if (messageId == regionMessageId && user.id != Config.botID) {
+        switch (emojiIdentifier) {
+            case '%F0%9F%87%AA': //E
+                await message.guild.edit({ region: 'us-east' }, `Requested by Moderator ${messageReaction.message.author.username}`);
+                message.channel.send('Server region has been changed to **US-EAST**');
+                break;
+            case '%F0%9F%87%BC': //W
+                await message.guild.edit({ region: 'us-west' }, `Requested by Moderator ${messageReaction.message.author.username}`);
+                message.channel.send('Server region has been changed to **US-WEST**');
+                break;
+            case '%F0%9F%87%A8': //C
+                await message.guild.edit({ region: 'us-central' }, `Requested by Moderator ${messageReaction.message.author.username}`);
+                message.channel.send('Server region has been changed to **US-CENTRAL**');
+                break;
+            case '%F0%9F%87%B8': //S
+                await message.guild.edit({ region: 'us-south' }, `Requested by Moderator ${messageReaction.message.author.username}`);
+                message.channel.send('Server region has been changed to **US-SOUTH**');
+                break;
+        }
     }
 };
 
@@ -82,6 +105,26 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                     case ServerCommands.stats:
                         message.delete();
                         GenerateServerStats(message)
+                        break;
+                }
+            }
+        }
+        if (checkIfMod(message.author.id)) {
+            const content = message.content.slice(1, message.content.length);
+            const params = content.split(' ');
+            if (params.length > 0) {
+                const command = params[0];
+                switch (command) {
+                    case ServerCommands.region:
+                        {
+                            const regionMessage = await message.channel.send(`Current region **${message.guild.region.toUpperCase()}**\nTo change react below:\n    **🇼:US-WEST   🇪:US-EAST   🇨:US-CENTRAL   🇸:US-SOUTH**`);
+
+                            regionMessage.react('%F0%9F%87%BC');
+                            regionMessage.react('%F0%9F%87%AA');
+                            regionMessage.react('%F0%9F%87%A8');
+                            regionMessage.react('%F0%9F%87%B8');
+                            regionMessageId = regionMessage.id;
+                        }
                         break;
                 }
             }

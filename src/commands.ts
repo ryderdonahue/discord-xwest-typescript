@@ -12,6 +12,7 @@ export const ServerCommands = {
     stats: 'stats',
     prune: 'prune',
     say: 'say',
+    region: 'region',
 }
 
 export const CommandPrefix = '!';

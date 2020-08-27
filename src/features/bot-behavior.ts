@@ -37,7 +37,7 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                 case ServerCommands.reminder:
                     if (reminders.length < Constants.maxReminders) {
                         if (params.length > 2) {
-                            let d = date.parse(params[1], 'hh:mmA');
+                            const d = date.parse(params[1], 'hh:mmA');
                             let reminderMessage = '';
                             for (let i = 2; i < params.length; i++) {
                                 reminderMessage += params[i] + ' ';

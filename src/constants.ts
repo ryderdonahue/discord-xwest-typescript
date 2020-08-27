@@ -5,6 +5,7 @@ export const Constants = {
     \n\`!request [feature]\` will log a feature request for XWestbot
     \n\`!credits\` will show you your current credits
     \n\`!reminder [hh:mmA] [your reminder]\` will create a one off reminder that users can subscribe to - example \`!reminder 09:30PM Time to play Siege!\`
+    \n\`!region\` will allow a moderator to change the region
      `,
     maxReminders: 30,
 }

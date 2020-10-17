@@ -92,7 +92,7 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                         }
                         break;
                     case ServerCommands.say:
-                        message.channel.send(message.content.slice(9, message.content.length));
+                        message.channel.send(message.content.slice(ServerCommands.say.length, message.content.length));
                         message.delete();
                         break;
                     case ServerCommands.prune:

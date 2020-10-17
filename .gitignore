@@ -12,6 +12,9 @@ coverage
 # Transpiled files
 build/
 
+
+.node-persist/
+
 # VS Code
 .vscode
 !.vscode/tasks.js

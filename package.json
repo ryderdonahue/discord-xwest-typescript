@@ -36,6 +36,7 @@
     "date-and-time": "^0.13.1",
     "discord.js": "^12.2.0",
     "http": "0.0.1-security",
+    "https": "^1.0.0",
     "node-persist": "^3.1.0",
     "tslib": "~2.0.0"
   }

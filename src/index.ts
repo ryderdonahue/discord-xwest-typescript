@@ -45,8 +45,8 @@ async function main() {
 
         // setup reminders check
         setTimeout(function () {
-            setInterval(BotBehavior.CheckReminders, 60000);
-            BotBehavior.CheckReminders();
+            setInterval(()=>BotBehavior.CheckReminders(client), 60000);
+            BotBehavior.CheckReminders(client);
         }, (60 - new Date().getSeconds()) * 1000);
     });
 

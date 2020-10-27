@@ -6,6 +6,7 @@ import { SanitizeMarkdown, shuffle } from '../util';
 import { EmojiArray, Constants } from '../constants';
 import * as date from 'date-and-time';
 import { Reminder } from '../types';
+import { getCovidData, covidChannelId } from '../special/covid';
 
 let reminders: Reminder[] = [];
 
@@ -65,6 +66,9 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                     message.author.send(Constants.helpMessage);
                     message.channel.send("Command instructions have been DMd to you.");
                     break;
+                case ServerCommands.covid:
+                        getCovidData(message.channel as Discord.TextChannel);
+                        break;
                 case ServerCommands.roll:
                     if (params.length > 1) {
                         if (params[1].charAt(0).toLocaleLowerCase() == "d") {
@@ -75,15 +79,15 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                         }
                     }
                     break;
-                case ServerCommands.request:
-                    if (params.length > 1) {
-                        client.guilds.cache.find(guild => guild.id === Config.xwestServerId).
-                            members.cache.find(member => member.id == Config.superUser).
-                            send(message.author.username + " requests: " + content.slice(params[0].length, content.length));
-                    } else {
-                        message.channel.send("Please attach a request with your request. Example: `!request money printing feature`");
-                    }
-                    break;
+                    case ServerCommands.request:
+                        if (params.length > 1) {
+                            client.guilds.cache.find(guild => guild.id === Config.xwestServerId).
+                                members.cache.find(member => member.id == Config.superUser).
+                                send(message.author.username + " requests: " + content.slice(params[0].length, content.length));
+                        } else {
+                            message.channel.send("Please attach a request with your request. Example: `!request money printing feature`");
+                        }
+                        break;
                 case ServerCommands.poll:
                     if (params.length > 3 && !isNaN(Number(params[1]))) {
                         if (params.length > 10) {
@@ -138,7 +142,7 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
     }
 }
 
-export async function CheckReminders() {
+export async function CheckReminders(client: Discord.Client) {
     const now = new Date();
     for (let i = reminders.length - 1; i >= 0; i--) {
         const reminder = reminders[i];
@@ -158,6 +162,13 @@ export async function CheckReminders() {
             reminders = reminders.splice(i, 1);
         }
     };
+
+    if (now.getHours() == 12 && now.getMinutes() == 0) {
+        const covidChannel = client.channels.cache.find((channel=>channel.id === covidChannelId));
+        if (covidChannel) {
+            getCovidData(covidChannel as Discord.TextChannel);
+        }
+    }
 }
 
 

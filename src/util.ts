@@ -28,3 +28,14 @@ export function checkIfMod(id: string): boolean {
 export function checkIfDuplicate(array: any[], id: string): boolean {
   return array.some((arrayElement) => arrayElement == id);
 }
+
+export function formatRate(num: number): string {
+  let res = num.toLocaleString();
+  if (num > 0) {
+    res = "+" + res;
+  }else if (num < 0){
+    res = "-" + res;
+  }
+
+  return res;
+}

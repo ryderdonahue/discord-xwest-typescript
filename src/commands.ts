@@ -13,7 +13,7 @@ export const ServerCommands = {
     prune: 'prune',
     say: 'say',
     region: 'region',
-    covid: 'covid',
+    covid: 'coviddata',
 }
 
 export const CommandPrefix = '!';

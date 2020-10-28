@@ -1,41 +1,34 @@
-import * as https from "https";
-import { IncomingMessage } from 'http';
 import { formatRate } from '../util';
-import { CovidStateData } from '../types';
+import { CovidStateData, CovidUSData } from '../types';
 import * as Discord from "discord.js";
 export const covidChannelId = '687120053086322714';
-// simple https get with json parsing of covid data
-export const getCovidData = (channel: Discord.TextChannel) => {
-    https.get("https://api.covidtracking.com/v1/states/wa/daily.json", (res: IncomingMessage) => {
-        let body = "";
-        res.on("data", (chunk) => {
-            body += chunk;
-        });
+import  got from "got";
 
-        res.on("end", () => {
-            try {
-                let data = JSON.parse(body) as CovidStateData[];
-                if (data) {
-                    const lastdata = data.find((value: CovidStateData) => value.positiveIncrease != 0);
-                    if (lastdata) {
-                        const stats = `\`\`\`
-Data sourced from: https://api.covidtracking.com/v1/states/wa/daily.json
-Date of last valid data: ${new Date(lastdata.dateModified).toLocaleString()}
-State population: ~7,615,000
-State total cases: ${lastdata.positive.toLocaleString()} 
-Case increase: ${formatRate(lastdata.positiveIncrease)}
-Currently hospitalized: ${lastdata.hospitalizedCurrently.toLocaleString()}
-Hospitalized increase: ${formatRate(lastdata.hospitalizedIncrease)}
-Ventilator current usage: ${lastdata.onVentilatorCurrently.toLocaleString()}
-Death increase: ${formatRate(lastdata.deathIncrease)}
-Total deaths: ${lastdata.death.toLocaleString()}\`\`\`
-                                    `;
-                        channel.send(stats);
-                    }
-                }
-            } catch (error) {
-                console.error(error.message);
-            };
-        });
-    });
+const stateCurrentApiSrc = (state: string): string => `https://api.covidtracking.com/v1/states/${state}/daily.json`
+const usCurrentApiSrc = `https://api.covidtracking.com/v1/us/current.json`;
+// simple https get with json parsing of covid data
+export const getCovidData = async (channel: Discord.TextChannel) => {
+    const stateData = await got<CovidStateData[]>(stateCurrentApiSrc("wa"), { responseType: "json"});
+    const usData = await got<CovidUSData[]>(usCurrentApiSrc, { responseType: "json"});
+    console.log(usData.body);
+    let stats = ""; 
+    stats += summarizeCovidData(usData.body[0], "US data", usCurrentApiSrc);
+    const lastValidStateData = stateData.body.find((value: CovidStateData) => value.positiveIncrease != 0);
+    
+    stats += summarizeCovidData(lastValidStateData, "Washington Data", stateCurrentApiSrc("wa"));
+
+    channel.send(stats);
 }
+
+const summarizeCovidData = (data: CovidStateData | CovidUSData, title: string, src: string): string => {
+    return `\`\`\`
+    ${title} as of: ${new Date(data.dateChecked).toLocaleString()}
+    Data sourced from: ${src}
+    State total cases: ${data.positive.toLocaleString()} 
+    Case increase: ${formatRate(data.positiveIncrease)}
+    Currently hospitalized: ${data.hospitalizedCurrently.toLocaleString()}
+    Hospitalized increase: ${formatRate(data.hospitalizedIncrease)}
+    Ventilator current usage: ${data.onVentilatorCurrently.toLocaleString()}
+    Death increase: ${formatRate(data.deathIncrease)}
+    Total deaths: ${data.death.toLocaleString()}\`\`\``;
+};

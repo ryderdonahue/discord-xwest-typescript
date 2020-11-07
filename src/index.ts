@@ -8,6 +8,7 @@ import * as RoleManagement from './features/role-management';
 import * as ModeratorTools from './features/moderator-tools';
 import * as CreditManagement from './features/credit-management';
 import * as BotBehavior from './features/bot-behavior';
+import { GetDaysUntilInauguration } from './special/election';
 
 export const client = new Discord.Client();
 
@@ -35,7 +36,9 @@ async function main() {
 
     client.on('ready', async () => {
         console.log('Xwest Bot onlne');
-        client.user.setActivity("!help for commands", { name: "!help for commands", type: "LISTENING" });
+        const status = `${GetDaysUntilInauguration()} days go by`;
+        client.user.setActivity(status, { name: status, type: "WATCHING" });
+        // client.user.setActivity("!help for commands", { name: "!help for commands", type: "LISTENING" });
 
         // get message history for #role channel such that these messages can be monitored for reactions
         const XWestServer = client.guilds.cache.find(guild => guild.id === Config.xwestServerId);

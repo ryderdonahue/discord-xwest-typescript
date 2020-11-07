@@ -7,6 +7,7 @@ import { EmojiArray, Constants } from '../constants';
 import * as date from 'date-and-time';
 import { Reminder } from '../types';
 import { getCovidData, covidChannelId } from '../special/covid';
+import { GetDaysUntilInauguration } from '../special/election';
 
 let reminders: Reminder[] = [];
 
@@ -169,6 +170,9 @@ export async function CheckReminders(client: Discord.Client) {
             getCovidData(covidChannel as Discord.TextChannel);
         }
     }
+
+    const status = `${GetDaysUntilInauguration()} days go by`;
+    client.user.setActivity(status, { name: status, type: "WATCHING" });
 }
 
 

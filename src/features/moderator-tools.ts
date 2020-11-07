@@ -92,9 +92,9 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                         }
                         break;
                     case ServerCommands.say:
-                        message.channel.send(message.content.slice(ServerCommands.say.length, message.content.length));
+                        message.channel.send(message.content.slice(ServerCommands.say.length + 1, message.content.length));
                         message.delete();
-                        break;
+                        break; 
                     case ServerCommands.prune:
                         message.mentions.members.forEach((user) => {
                             user.send("Sorry " + user.displayName + " you have been pruned from XWest due to inactivity. Please reach out to an admin or member if you would like to be readded.").then(() => {

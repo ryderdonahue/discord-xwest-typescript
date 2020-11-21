@@ -1,5 +1,4 @@
 import * as Discord from "discord.js";
-import * as date from 'date-and-time';
 
 import { apiKey } from "./botkey";
 import * as storage from "node-persist";
@@ -48,9 +47,11 @@ async function main() {
 
         // setup reminders check
         setTimeout(function () {
-            setInterval(()=>BotBehavior.CheckReminders(client), 60000);
+            setInterval(() => BotBehavior.CheckReminders(client), 60000);
             BotBehavior.CheckReminders(client);
         }, (60 - new Date().getSeconds()) * 1000);
+
+        BotBehavior.setElectionStatus();
     });
 
     // WELCOME MESSAGE FOR NEW MEMBERS

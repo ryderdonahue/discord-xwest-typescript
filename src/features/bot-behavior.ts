@@ -7,7 +7,7 @@ import { EmojiArray, Constants } from '../constants';
 import * as date from 'date-and-time';
 import { Reminder } from '../types';
 import { getCovidData, covidChannelId } from '../special/covid';
-import { GetDaysUntilInauguration } from '../special/election';
+import { GetComicalName, GetDaysUntilInauguration, politicsChannelId } from '../special/election';
 
 let reminders: Reminder[] = [];
 
@@ -68,8 +68,8 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                     message.channel.send("Command instructions have been DMd to you.");
                     break;
                 case ServerCommands.covid:
-                        getCovidData(message.channel as Discord.TextChannel);
-                        break;
+                    getCovidData(message.channel as Discord.TextChannel);
+                    break;
                 case ServerCommands.roll:
                     if (params.length > 1) {
                         if (params[1].charAt(0).toLocaleLowerCase() == "d") {
@@ -80,15 +80,15 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
                         }
                     }
                     break;
-                    case ServerCommands.request:
-                        if (params.length > 1) {
-                            client.guilds.cache.find(guild => guild.id === Config.xwestServerId).
-                                members.cache.find(member => member.id == Config.superUser).
-                                send(message.author.username + " requests: " + content.slice(params[0].length, content.length));
-                        } else {
-                            message.channel.send("Please attach a request with your request. Example: `!request money printing feature`");
-                        }
-                        break;
+                case ServerCommands.request:
+                    if (params.length > 1) {
+                        client.guilds.cache.find(guild => guild.id === Config.xwestServerId).
+                            members.cache.find(member => member.id == Config.superUser).
+                            send(message.author.username + " requests: " + content.slice(params[0].length, content.length));
+                    } else {
+                        message.channel.send("Please attach a request with your request. Example: `!request money printing feature`");
+                    }
+                    break;
                 case ServerCommands.poll:
                     if (params.length > 3 && !isNaN(Number(params[1]))) {
                         if (params.length > 10) {
@@ -143,7 +143,7 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
     }
 }
 
-export async function CheckReminders(client: Discord.Client) {
+export async function CheckReminders(client: Discord.Client): Promise<void> {
     const now = new Date();
     for (let i = reminders.length - 1; i >= 0; i--) {
         const reminder = reminders[i];
@@ -165,10 +165,24 @@ export async function CheckReminders(client: Discord.Client) {
     };
 
     if (now.getHours() == 12 && now.getMinutes() == 0) {
-        const covidChannel = client.channels.cache.find((channel=>channel.id === covidChannelId));
+        const covidChannel = client.channels.cache.find((channel => channel.id === covidChannelId));
         if (covidChannel) {
             getCovidData(covidChannel as Discord.TextChannel);
         }
+    }
+
+    if (now.getHours() % 3 == 0 && now.getMinutes() == 0) {
+        setElectionStatus();
+    }
+}
+
+export const setElectionStatus = (): void => {
+    const XWestServer = client.guilds.cache.find(guild => guild.id === Config.xwestServerId);
+    const politicsChannel: Discord.GuildChannel = XWestServer.channels.cache.find((channel) => channel.id === politicsChannelId);
+    if (politicsChannel) {
+        const status = GetComicalName();
+        console.log(status);
+        politicsChannel.setTopic(status);
     }
 
     const status = `${GetDaysUntilInauguration()} days go by`;

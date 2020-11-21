@@ -189,9 +189,21 @@ export const setElectionStatus = (): void => {
     client.user.setActivity(status, { name: status, type: "WATCHING" });
 }
 
+const mockText = (str: string): string => {
+    let res = '';
+    for (let i = 0; i < str.length; i++) {
+        const changeCase = Math.round(Math.random() * 2) === 1; // just flip a coin
+        const char = str.charAt(i);
+        res += changeCase ? char.toUpperCase() : char.toLowerCase();
+    }
+    return res;
+}
 
 export async function handleReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User | Discord.PartialUser): Promise<void> {
     switch (messageReaction.emoji.identifier) {
+        case "mocking_spongebob:779489470198054922":
+            messageReaction.message.channel.send(`${messageReaction.message.author.username}: <:mocking_spongebob:779489470198054922> ${mockText(messageReaction.message.cleanContent)}`);
+            break;
         case '%F0%9F%9B%91': // stop sign
             for (let i = reminders.length - 1; i >= 0; i--) {
                 const reminder = reminders[i];

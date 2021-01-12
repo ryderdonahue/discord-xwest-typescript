@@ -7,6 +7,7 @@ import * as RoleManagement from './features/role-management';
 import * as ModeratorTools from './features/moderator-tools';
 import * as CreditManagement from './features/credit-management';
 import * as BotBehavior from './features/bot-behavior';
+import * as RepostManagement from './features/repost-management';
 import { GetDaysUntilInauguration } from './special/election';
 
 export const client = new Discord.Client();
@@ -80,6 +81,10 @@ async function main() {
     // BOT BEHAVIOR
     client.on('message', BotBehavior.handleMessage);
     client.on('messageReactionAdd', BotBehavior.handleReactionAdd);
+
+    // REPOST MANAGEMENT
+    client.on('message', RepostManagement.handleMessage);
+
 }
 
 main();

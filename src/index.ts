@@ -36,9 +36,7 @@ async function main() {
 
     client.on('ready', async () => {
         console.log('Xwest Bot onlne');
-        const status = `${GetDaysUntilInauguration()} days go by`;
-        client.user.setActivity(status, { name: status, type: "WATCHING" });
-        // client.user.setActivity("!help for commands", { name: "!help for commands", type: "LISTENING" });
+        client.user.setActivity("!help for commands", { name: "!help for commands", type: "LISTENING" });
 
         // get message history for #role channel such that these messages can be monitored for reactions
         const XWestServer = client.guilds.cache.find(guild => guild.id === Config.xwestServerId);
@@ -51,8 +49,6 @@ async function main() {
             setInterval(() => BotBehavior.CheckReminders(client), 60000);
             BotBehavior.CheckReminders(client);
         }, (60 - new Date().getSeconds()) * 1000);
-
-        BotBehavior.setElectionStatus();
     });
 
     // WELCOME MESSAGE FOR NEW MEMBERS

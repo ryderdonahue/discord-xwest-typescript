@@ -2,21 +2,21 @@ import { formatRate } from '../util';
 import { CovidStateData, CovidUSData } from '../types';
 import * as Discord from "discord.js";
 export const covidChannelId = '687120053086322714';
-import  got from "got";
+import got from "got";
 
 const stateCurrentApiSrc = (state: string): string => `https://api.covidtracking.com/v1/states/${state}/daily.json`;
 const usCurrentApiSrc = `https://api.covidtracking.com/v1/us/daily.json`;
 // simple https get with json parsing of covid data
 export const getCovidData = async (channel: Discord.TextChannel) => {
-    const stateData = await got<CovidStateData[]>(stateCurrentApiSrc("wa"), { responseType: "json"});
-    const usData = await got<CovidUSData[]>(usCurrentApiSrc, { responseType: "json"});
-    let stats = ""; 
-    stats += summarizeCovidData(usData.body[0], usData.body,"US data", usCurrentApiSrc);
-    const lastValidStateData = stateData.body.find((value: CovidStateData) => value.positiveIncrease != 0);
-    
-    stats += summarizeCovidData(lastValidStateData, stateData.body,  "Washington Data", stateCurrentApiSrc("wa"));
+    // const stateData = await got<CovidStateData[]>(stateCurrentApiSrc("wa"), { responseType: "json"});
+    // const usData = await got<CovidUSData[]>(usCurrentApiSrc, { responseType: "json"});
+    // let stats = ""; 
+    // stats += summarizeCovidData(usData.body[0], usData.body,"US data", usCurrentApiSrc);
+    // const lastValidStateData = stateData.body.find((value: CovidStateData) => value.positiveIncrease != 0);
 
-    channel.send(stats);
+    // stats += summarizeCovidData(lastValidStateData, stateData.body,  "Washington Data", stateCurrentApiSrc("wa"));
+
+    // channel.send(stats);
 }
 
 const getTrendData = (data: CovidStateData[] | CovidUSData[]) => {
@@ -24,7 +24,7 @@ const getTrendData = (data: CovidStateData[] | CovidUSData[]) => {
     let averageHospitalizationsIncrease = 0;
     let averagePositiveCasesIncrease = 0;
     let averageDeathsIncrease = 0;
-    for (let i = firstValidIndex; i < firstValidIndex + 5; i++){
+    for (let i = firstValidIndex; i < firstValidIndex + 5; i++) {
         const datum = data[i];
         averageHospitalizationsIncrease += datum.hospitalizedIncrease;
         averagePositiveCasesIncrease += datum.positiveIncrease;

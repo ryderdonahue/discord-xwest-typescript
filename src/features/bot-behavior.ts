@@ -1,4 +1,4 @@
-import * as Discord from "discord.js";
+﻿import * as Discord from "discord.js";
 import { creditSystem, client } from "..";
 import { Config } from '../config';
 import { CommandPrefix, ServerCommands } from '../commands';
@@ -7,7 +7,6 @@ import { EmojiArray, Constants } from '../constants';
 import * as date from 'date-and-time';
 import { Reminder } from '../types';
 import { getCovidData, covidChannelId } from '../special/covid';
-import { GetComicalName, GetDaysUntilInauguration, politicsChannelId } from '../special/election';
 
 let reminders: Reminder[] = [];
 
@@ -171,23 +170,23 @@ export async function CheckReminders(client: Discord.Client): Promise<void> {
         }
     }
 
-    if (now.getHours() % 3 == 0 && now.getMinutes() == 0) {
-        setElectionStatus();
-    }
+    // if (now.getHours() % 3 == 0 && now.getMinutes() == 0) {
+    //     // setElectionStatus();
+    // }
 }
 
-export const setElectionStatus = (): void => {
-    const XWestServer = client.guilds.cache.find(guild => guild.id === Config.xwestServerId);
-    const politicsChannel: Discord.GuildChannel = XWestServer.channels.cache.find((channel) => channel.id === politicsChannelId);
-    if (politicsChannel) {
-        const status = GetComicalName();
-        console.log(status);
-        politicsChannel.setTopic(status);
-    }
+// export const setElectionStatus = (): void => {
+//     const XWestServer = client.guilds.cache.find(guild => guild.id === Config.xwestServerId);
+//     const politicsChannel: Discord.GuildChannel = XWestServer.channels.cache.find((channel) => channel.id === politicsChannelId);
+//     if (politicsChannel) {
+//         const status = GetComicalName();
+//         console.log(status);
+//         politicsChannel.setTopic(status);
+//     }
 
-    const status = `${GetDaysUntilInauguration()} days go by`;
-    client.user.setActivity(status, { name: status, type: "WATCHING" });
-}
+//     const status = `${GetDaysUntilInauguration()} days go by`;
+//     client.user.setActivity(status, { name: status, type: "WATCHING" });
+// }
 
 const mockText = (str: string): string => {
     let res = '';

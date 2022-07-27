@@ -116,7 +116,6 @@ export async function handleMessage(message: Discord.Message): Promise<void> {
             }
             break;
           case ServerCommands.say:
-            console.log('saying hi');
             message.channel.send(
               message.content.slice(
                 ServerCommands.say.length + 1,
